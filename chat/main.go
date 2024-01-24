@@ -18,7 +18,7 @@ type TemplateHandler struct {
    // ServeHTTP handles the HTTP request.
 func (t *TemplateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
-		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
+		t.templ = template.Must(template.ParseFiles(filepath.Join("../templates", t.filename)))
 	})
 	t.templ.Execute(w, r)
    }
@@ -28,6 +28,7 @@ func main(){
 	flag.Parse()
 
 	r := newRoom()
+	// r.tracer = trace.New(os.Stdout)
 	http.Handle("/", &TemplateHandler{filename: "chat.html"})
 	http.Handle("/room", r)
 
@@ -35,7 +36,7 @@ func main(){
 	go r.run()
 
 	// Serving static files from the "static" subdirectory
-	staticHandler := http.FileServer(http.Dir("static"))
+	staticHandler := http.FileServer(http.Dir("../static"))
 	http.Handle("/static/", http.StripPrefix("/static/", staticHandler))
 
 	// Starting the web server

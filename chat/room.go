@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/StaphoneWizzoh/ChitChat/trace"
 	"github.com/gorilla/websocket"
 )
 
@@ -30,6 +31,9 @@ type Room struct{
 
 	// Clients holds all current clients in this room
 	clients map[*Client]bool
+
+	// tracer will receive trace information of activity in the room
+	tracer trace.Tracer
 }
 
 // newRoom makes a new room.
@@ -39,6 +43,7 @@ func newRoom() *Room{
 		join: make(chan *Client),
 		leave: make(chan *Client),
 		clients: make(map[*Client]bool),
+		tracer: trace.Off(),
 	}
 }
 
@@ -48,14 +53,18 @@ func (r *Room) run(){
 		case client := <-r.join:
 			// Joining the room
 			r.clients[client] = true
+			r.tracer.Trace("New client joined.")
 		case client := <-r.leave:
 			// Leaving the room
 			delete(r.clients, client)
 			close(client.send)
+			r.tracer.Trace("Client left")
 		case msg := <- r.forward:
+			r.tracer.Trace("Message received: ", string(msg))
 			// Foward message to all clients
 			for client := range r.clients{
 				client.send <- msg
+				r.tracer.Trace(" -- sent to client")
 			}
 		}
 	}
