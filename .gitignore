@@ -1,0 +1,6 @@
+*.exe
+chitchat
+vendor/*
+*.test
+test.*
+*.env
