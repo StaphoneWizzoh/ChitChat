@@ -4,25 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/login.css">
-    <title>Login - ChitChat</title>
+    <title>Signup - ChitChat</title>
 </head>
 
 <body>
     <div class="container">
         <div class="page-header">
-            <h1>Sign in</h1>
+            <h1>Create a new ChitChat account</h1>
         </div>
         <div class="panel panel-danger">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    In order to chat, you must be signed in
-                </h3>
-            </div>
             <div>
                 <form action="" method="post">
                     <label for="username">Username</label>
                     <input id="username" name="username" type="text" placeholder="Enter your ChitChat username"><br>
+
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="text" placeholder="Enter your preferred valid email"><br>
 
                     <label for="password">Password</label>
                     <input type="password" name="password" id="password"><br>
@@ -31,7 +28,7 @@
                 </form>
             </div>
             <div class="panel-body">
-                <p>Alternatively, Select the service you would like to sign in with:</p>
+                <p>Alternatively, Select the service you would like to Register with:</p>
                 <ul>
                     <li>
                         <a href="/auth/login/facebook">Facebook</a>
@@ -45,8 +42,8 @@
                 </ul>
             </div>
             <div>
-                <p>Don't have an account, </p>
-                <a href="/signup">Create new ChitChat Account</a>
+                <p>Already have an account, </p>
+                <a href="/login">Login</a>
             </div>
         </div>
     </div>
