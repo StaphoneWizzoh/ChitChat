@@ -27,10 +27,22 @@ func main(){
 	var addr = flag.String("addr", ":8000", "The addr of the application.")
 	flag.Parse()
 
+	// Initializations
 	r := newRoom()
+	InitDatabase()
+
+	// TODO: To be refactored and/or deleted
+	err := CreateUser("Staphone", "test@mail.com", "password")
+	if err != nil{
+		log.Println("Error creating test user:", err)
+	}
+	
+
 	// r.tracer = trace.New(os.Stdout)
+	// http.Handle("/", MustAuth(&TemplateHandler{filename: "index.html"}))
 	http.Handle("/chat", MustAuth(&TemplateHandler{filename: "chat.html"}))
 	http.Handle("/login", &TemplateHandler{filename: "login.html"})
+	http.Handle("/signup", &TemplateHandler{filename: "signup.html"})
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 

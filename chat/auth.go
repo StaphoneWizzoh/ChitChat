@@ -41,9 +41,14 @@ func loginHandler(w http.ResponseWriter, r * http.Request){
 	segs := strings.Split(r.URL.Path, "/")
 	action := segs[2]
 	provider := segs[3]
+	if provider == ""{
+		log.Println("The url path triggered didn't provide a provider service.")
+	}
 	switch action{
 	case "login":
 		log.Println("TODO handle login for", provider)
+	case "signup":
+
 	default:
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "Auth action %s not supported", action)
