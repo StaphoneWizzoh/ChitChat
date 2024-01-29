@@ -15,6 +15,9 @@ type Client struct{
 
 	// Room is the room thid client is chatting in
 	room *Room
+
+	// Associated client 
+	user *User
 }
 
 func (c *Client) read(){

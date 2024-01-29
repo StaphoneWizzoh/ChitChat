@@ -71,6 +71,14 @@ func (r *Room) run(){
 }
 
 func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request){
+	// Extracting the current user from the request context
+	// user, ok := req.Context().Value("user").(*User)
+	// if !ok{
+	// 	http.Error(w, "User not found in context", http.StatusInternalServerError)
+	// 	return
+	// }
+
+
 	socket, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
 		log.Fatal("ServeHTTP for Room Object:", err)
@@ -81,6 +89,7 @@ func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request){
 		socket: socket,
 		send: make(chan []byte, messageBufferSize),
 		room: r,
+		// user: user,
 	}
 
 	r.join <- client

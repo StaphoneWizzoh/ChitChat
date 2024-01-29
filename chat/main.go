@@ -14,12 +14,25 @@ type TemplateHandler struct {
 	once sync.Once
 	filename string
 	templ *template.Template
+
+	// Current user field
+	currentUser *User
    }
    // ServeHTTP handles the HTTP request.
 func (t *TemplateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("../templates", t.filename)))
 	})
+
+	// Getting the current user ID from the session
+	userId := getAuthenticatedId(r)
+
+	// Retrieve user information based on the user id
+	user, exists := GetUser(userId)
+	if exists{
+		t.currentUser = &user
+	}
+
 	t.templ.Execute(w, r)
    }
 
@@ -29,21 +42,15 @@ func main(){
 
 	// Initializations
 	r := newRoom()
-	InitDatabase()
+	InitDatabase()	
 
-	// TODO: To be refactored and/or deleted
-	err := CreateUser("Staphone", "test@mail.com", "password")
-	if err != nil{
-		log.Println("Error creating test user:", err)
-	}
-	
-
+	// For tracing websocket flow in the application
 	// r.tracer = trace.New(os.Stdout)
+
 	// http.Handle("/", MustAuth(&TemplateHandler{filename: "index.html"}))
 	http.Handle("/chat", MustAuth(&TemplateHandler{filename: "chat.html"}))
-	http.Handle("/login", &TemplateHandler{filename: "login.html"})
-	http.Handle("/signup", &TemplateHandler{filename: "signup.html"})
-	http.HandleFunc("/auth/", loginHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/signup", signupHandler)
 	http.Handle("/room", r)
 
 	// Starting the room

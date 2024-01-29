@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -14,6 +15,28 @@ type User struct{
 	Username string
 	Email string
 	Password string
+}
+
+func (user *User) SetPassword(password string) error{
+	hashedPassword, err := hashString(password)
+	if err != nil{
+		return err
+	}
+	user.Password = string(hashedPassword)
+	return nil
+}
+
+func (user *User) CheckPassword(password string) error{
+	inputHash, err := hashString(password)
+	if err != nil{
+		log.Println("Error in hashing during password verification")
+		return err
+	}
+
+	if user.Password != inputHash{
+		return errors.New("passwords do not match!")
+	}
+	return nil
 }
 
 func InitDatabase(){
@@ -37,14 +60,23 @@ func CreateUser(username, email, password string) (registrationError error){
 	if result.RowsAffected == 0{
 		// User does not exist
 		// Create user
+		hashPassword, err := hashString(password)
+		if err != nil{
+			registrationError = err
+		}
 		db.Create(&User{
 			Username: username,
 			Email: email,
-			Password: password,
+			Password: hashPassword,
 		})
 	}else{
 		registrationError = errors.New("User already exists")
 	}
 
 	return registrationError
+}
+
+func GetUser(userId string)(User, bool){
+	user, exists:= User{}, false
+	return user, exists
 }
