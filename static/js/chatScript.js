@@ -1,6 +1,6 @@
 $(function () {
     var socket = null;
-    var msgBox = $("#chatbox textarea");
+    var msgBox = $(".main .footer #chatbox textarea");
     var messages = $("#messages");
     $("#chatbox").submit(function () {
         if (!msgBox.val()) return false;

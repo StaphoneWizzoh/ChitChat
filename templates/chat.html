@@ -4,19 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/chat.css">
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/chatScript.js"></script>
     <title>ChitChat</title>
 
 </head>
 
-<body>
-    <ul id="messages"></ul>
-    <form action="" id="chatbox">
-        <textarea name="" id="" cols="30" rows="10"></textarea>
-        <input type="submit" value="Send">
-    </form>
+<body class="main">
+    <section class="header">
+        <h1>ChitChat</h1>
+    </section>
+    <section class="body">
+        <ul id="messages"></ul>
+    </section>
+    <section class="footer">
+        <form action="" id="chatbox" class="form">
+            <textarea name="" id="" class="textarea"></textarea>
+            <input type="submit" value="🚀" class="send_btn">
+        </form>
+    </section>
+
+
 
 </body>
 

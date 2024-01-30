@@ -1,0 +1,59 @@
+input {
+    display: block;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+    margin: 0.25rem 0;
+    width: 12.3125rem;
+    min-height: 4.5rem;
+    border-radius: 0.75rem;
+    padding: 0.75rem 0.875rem;
+    background: #bdbdbd;
+    background-blend-mode: normal;
+}
+
+/* Header section */
+.main .header {
+    text-align: center;
+}
+
+/* Messages area */
+.main .body {
+    height: 80vh;
+}
+
+/* Textbox section */
+
+.main .footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main .footer .form {
+    color: aqua;
+    display: flex;
+    width: 329px;
+    height: 44px;
+    border-radius: 14px;
+}
+
+.main .footer .form .textarea {
+    background: #bdbdbd;
+    width: 38.5625rem;
+    border-radius: 0.75rem;
+    margin-left: 0.125rem;
+    padding: 0.5rem 0.5rem;
+}
+
+.main .footer .form .send_btn {
+    border: none;
+}
+
+.main .footer .form .send_btn:hover {
+    cursor: pointer;
+}
