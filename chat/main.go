@@ -5,8 +5,11 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/StaphoneWizzoh/ChitChat/trace"
 )
 
 // templ represents a single template
@@ -41,11 +44,12 @@ func main(){
 	flag.Parse()
 
 	// Initializations
+	InitDatabase()
 	r := newRoom()
-	InitDatabase()	
+		
 
 	// For tracing websocket flow in the application
-	// r.tracer = trace.New(os.Stdout)
+	r.tracer = trace.New(os.Stdout)
 
 	// http.Handle("/", MustAuth(&TemplateHandler{filename: "index.html"}))
 	http.Handle("/chat", MustAuth(&TemplateHandler{filename: "chat.html"}))

@@ -10,20 +10,30 @@ type authHandler struct{
 }
 
 func (h * authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request){
-	_, err := r.Cookie("auth")
-	if err == http.ErrNoCookie{
-		// User not authenticated
-		log.Println("Redirecting since user is not authenticated.")
-		w.Header().Set("Location", "/login")
-		w.WriteHeader(http.StatusTemporaryRedirect)
+	// _, err := r.Cookie("auth")
+	// if err == http.ErrNoCookie{
+	// 	// User not authenticated
+	// 	log.Println("Redirecting since user is not authenticated.")
+	// 	w.Header().Set("Location", "/login")
+	// 	w.WriteHeader(http.StatusTemporaryRedirect)
+	// 	return
+	// }
+
+	// if err != nil {
+	// 	// Occurence of some other error
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+
+	// check if the user is already authenticated via local storage
+	if token := getTokenFromLocalStorage(r); token == "" {
+		// User is not authenticated, redirect to chat page
+		log.Println("Redirecting since user is not authenticated")
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
-	if err != nil {
-		// Occurence of some other error
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	
 
 	// Successful authentication - Calling next handler
 	h.next.ServeHTTP(w,r)

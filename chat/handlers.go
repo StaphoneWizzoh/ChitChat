@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+const localStorageTokenKey = "authToken"
+
 func signupHandler(w http.ResponseWriter, r *http.Request){
 	if r.Method == http.MethodPost{
 		// Retrieve form data
@@ -21,15 +23,9 @@ func signupHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 
-		// set the authentication cookie
-		http.SetCookie(w, &http.Cookie{
-			Name: "auth",
-			Value: username,
-			// TODO: Setup cookie properties if need arises
-		})
-
 		// Redirect the user to the login page after successful registration
 		http.Redirect(w,r,"/login", http.StatusSeeOther)
+		return
 	}else{
 		// Rendering the signup form template
 		signupTemplate := &TemplateHandler{filename: "signup.html"}
@@ -43,11 +39,19 @@ func loginHandler(w http.ResponseWriter, r *http.Request){
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
+		// check if the user is already authenticated via local storage
+		if token := getTokenFromLocalStorage(r); token != "" {
+			// User is authenticated, redirect to chat page
+			http.Redirect(w, r, "/chat", http.StatusSeeOther)
+			return
+		}
+
 		var user User
 		result := db.Where("username = ?", username).First(&user)
 		if result.RowsAffected == 0 {
 			// User not found 
-			http.Error(w, "User does not Exist", http.StatusNotFound)
+			// http.Error(w, "User does not Exist", http.StatusNotFound)
+			log.Println("User does not Exist", http.StatusNotFound)
 			http.Redirect(w,r,"/signup", http.StatusSeeOther)
 			return
 		}
@@ -59,12 +63,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 
-		// set the authentication cookie
-		http.SetCookie(w, &http.Cookie{
-			Name: "auth",
-			Value: username,
-			// TODO: Setup cookie properties if need arises
-		})
+		// Set the authenticationtoken in local storage
+		setTokenInLocalStorage(w, username)
 
 		// Redirect the user to the chat page after successful login
 		http.Redirect(w,r,"/chat", http.StatusSeeOther)
@@ -74,3 +74,5 @@ func loginHandler(w http.ResponseWriter, r *http.Request){
 		loginTemplate.ServeHTTP(w,r)
 	}
 }
+
+

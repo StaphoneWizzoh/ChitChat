@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -38,13 +39,24 @@ type Room struct{
 
 // newRoom makes a new room.
 func newRoom() *Room{
-	return &Room{
+	r:=  &Room{
 		forward: make(chan []byte),
 		join: make(chan *Client),
 		leave: make(chan *Client),
 		clients: make(map[*Client]bool),
 		tracer: trace.Off(),
 	}
+
+	// Query messages from the database
+	// Load messages into the room
+	var messages []Message
+	db.Find(&messages)
+
+	// Iterate through messages and froward them to clients
+	for _, message := range messages{
+		r.forward <- []byte(fmt.Sprintf("[%s] %s", message.Time.Format("2006-01-02 15:04:05"), message.Content))
+	}
+	return r
 }
 
 func (r *Room) run(){
@@ -54,17 +66,30 @@ func (r *Room) run(){
 			// Joining the room
 			r.clients[client] = true
 			r.tracer.Trace("New client joined.")
+
 		case client := <-r.leave:
 			// Leaving the room
 			delete(r.clients, client)
 			close(client.send)
 			r.tracer.Trace("Client left")
+
 		case msg := <- r.forward:
-			r.tracer.Trace("Message received: ", string(msg))
 			// Foward message to all clients
 			for client := range r.clients{
+
+				if client.user != nil {
+					// Save the message to the database using the twmp variable
+				senderID := client.user.ID
+				SaveMessage(string(msg), senderID)
+
+				// Foward message to the client
 				client.send <- msg
 				r.tracer.Trace(" -- sent to client")
+
+				} else{
+					r.tracer.Trace(" -- sent to client")
+				}
+				
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"log"
+	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -12,10 +13,35 @@ var db *gorm.DB
 
 type User struct{
 	gorm.Model
-	Username string
-	Email string
-	Password string
+	Username 		string
+	Email 			string
+	Password 		string
+	Messages 		[]Message 		`gorm:"foreignKey:SenderID"`
 }
+
+type Message struct{
+	gorm.Model
+	Content 		string 
+	SenderID 		uint 
+	Time 			time.Time
+}
+
+// Initialize database
+
+func InitDatabase(){
+	// Connect to SQLite database
+
+	var err error
+	db, err = gorm.Open(sqlite.Open("../chitchat.db"), &gorm.Config{})
+	if err != nil {
+		panic("Failed to connect to database")
+	}
+
+	// Auto Migrate model structs
+	db.AutoMigrate(&User{}, &Message{}) 
+}
+
+// User type related methods
 
 func (user *User) SetPassword(password string) error{
 	hashedPassword, err := hashString(password)
@@ -34,23 +60,12 @@ func (user *User) CheckPassword(password string) error{
 	}
 
 	if user.Password != inputHash{
-		return errors.New("passwords do not match!")
+		return errors.New("passwords do not match")
 	}
 	return nil
 }
 
-func InitDatabase(){
-	// Connect to SQLite database
-
-	var err error
-	db, err = gorm.Open(sqlite.Open("../chitchat.db"), &gorm.Config{})
-	if err != nil {
-		panic("Failed to connect to database")
-	}
-
-	// Auto Migrate model structs
-	db.AutoMigrate(&User{}) 
-}
+// User type related functions
 
 func CreateUser(username, email, password string) (registrationError error){
 	var user User
@@ -64,11 +79,13 @@ func CreateUser(username, email, password string) (registrationError error){
 		if err != nil{
 			registrationError = err
 		}
-		db.Create(&User{
+		newUser := User{
 			Username: username,
 			Email: email,
 			Password: hashPassword,
-		})
+			Messages: []Message{},
+		}
+		db.Create(&newUser)
 	}else{
 		registrationError = errors.New("User already exists")
 	}
@@ -79,4 +96,15 @@ func CreateUser(username, email, password string) (registrationError error){
 func GetUser(userId string)(User, bool){
 	user, exists:= User{}, false
 	return user, exists
+}
+
+// Message type related functions
+func SaveMessage(content string, senderID uint){
+	message := Message{
+		Content: content,
+		SenderID: senderID,
+		Time: time.Now(),
+	}
+	db.Create(&message)
+	// TODO: Handle possible errors
 }

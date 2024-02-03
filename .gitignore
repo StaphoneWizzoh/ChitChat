@@ -4,3 +4,5 @@ vendor/*
 *.test
 test.*
 *.env
+*.db
+
