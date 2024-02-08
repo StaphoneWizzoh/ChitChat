@@ -87,6 +87,7 @@ func (r *Room) run(){
 				r.tracer.Trace(" -- sent to client")
 
 				} else{
+					client.send <- msg
 					r.tracer.Trace(" -- sent to client")
 				}
 				

@@ -64,7 +64,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request){
 		}
 
 		// Set the authenticationtoken in local storage
-		setTokenInLocalStorage(w, username)
+		// setTokenInLocalStorage(w, username)
 
 		// Redirect the user to the chat page after successful login
 		http.Redirect(w,r,"/chat", http.StatusSeeOther)

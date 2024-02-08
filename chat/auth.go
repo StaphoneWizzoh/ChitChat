@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -26,12 +25,12 @@ func (h * authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request){
 	// }
 
 	// check if the user is already authenticated via local storage
-	if token := getTokenFromLocalStorage(r); token == "" {
-		// User is not authenticated, redirect to chat page
-		log.Println("Redirecting since user is not authenticated")
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
+	// if token := getTokenFromLocalStorage(r); token == "" {
+	// 	// User is not authenticated, redirect to chat page
+	// 	log.Println("Redirecting since user is not authenticated")
+	// 	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	// 	return
+	// }
 
 	
 
